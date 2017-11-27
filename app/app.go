@@ -9,10 +9,16 @@ type AppError struct {
     Code    int
 }
 
-type AppHandler func(http.ResponseWriter, *http.Request) *AppError
+type ApiContext struct {
+	Params map[string]string
+}
+
+type AppHandler func(http.ResponseWriter, *http.Request, *ApiContext) *AppError
 
 func (fn AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    if err := fn(w, r); err != nil {
+	context := ApiContext{
+		make(map[string]string)}
+    if err := fn(w, r, &context); err != nil {
         http.Error(w, err.Message, err.Code)
     }
 }
